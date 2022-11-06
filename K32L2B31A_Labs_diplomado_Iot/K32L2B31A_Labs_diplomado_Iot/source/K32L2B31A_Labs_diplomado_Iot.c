@@ -1,37 +1,4 @@
-/*
- * Copyright 2016-2022 NXP
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of NXP Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
-/**
- * @file    K32L2B31A_Labs_diplomado_Iot.c
- * @brief   Application entry point.
- */
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -39,6 +6,30 @@
 #include "clock_config.h"
 #include "K32L2B31A.h"
 #include "fsl_debug_console.h"
+#include "fsl_adc16.h"
+
+
+volatile uint32_t g_systickCounter;
+
+void SysTick_Handler(void)
+{
+    if (g_systickCounter != 0U)
+    {
+        g_systickCounter--;
+    }
+}
+
+void SysTick_DelayTicks(uint32_t n)
+{
+    g_systickCounter = n;
+    while (g_systickCounter != 0U)
+    {
+    }
+}
+
+
+
+//#include "test.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
@@ -46,24 +37,74 @@
 /*
  * @brief   Application entry point.
  */
+//volatile static uint8_t i = 0;
+//float voltaje = 12.5f;
+
+//uint8_t mensaje[10];
+
 int main(void) {
 
     /* Init board hardware. */
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
+
+    if (SysTick_Config(SystemCoreClock / 1000U))
+    {
+        while (1)
+        {
+        }
+    }
+
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
 #endif
 
-    PRINTF("Hello World\n");
+    uint32_t dato_sensor;
+    float k1 = 3.3/4095;
+    float k2 = 3.29/-0.01;
+    float k3 = 1/0.2;
+
+    float voltaje;
+    float corriente;
+    float lux;
 
     /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
+        //volatile static int i = 0 ;
+
+
+   /* PRINTF("Volatje: %2.2f \r\n", voltaje); */
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
-        i++ ;
+
+
+        // Configurar canal adc
+        ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP,  &ADC0_channelsConfig[0]);
+
+        //Espera que el ADC finalice el ADC
+        while (0U == (kADC16_ChannelConversionDoneFlag &
+                              ADC16_GetChannelStatusFlags(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP)))
+                {
+                }
+
+        /* Captura dato ADC e imprime por consola */
+        dato_sensor = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
+        PRINTF("ADC Value: %d\r\n", dato_sensor);
+
+        voltaje = dato_sensor*k1;
+        PRINTF("Voltaje[V]: %2.2f\r\n", voltaje);
+
+        corriente = (voltaje/-0.01)-k2+1;
+        PRINTF("Corriente[uA]: %2.2f\r\n", corriente);
+
+        lux = corriente*k3;
+        PRINTF("LUX: %2.2f\r\n", lux);
+
+
+        SysTick_DelayTicks(1000U);
+        //i++ ;
+        //test(&i);
         /* 'Dummy' NOP to allow source level single stepping of
             tight while() loop */
         __asm volatile ("nop");

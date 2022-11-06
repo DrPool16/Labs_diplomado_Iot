@@ -352,6 +352,18 @@ void BOARD_InitACCEL_I2CPins(void);
  */
 void BOARD_InitOSCPins(void);
 
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void BOARD_InitSENS_LUZ(void);
+
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void BOARD_InitLM35(void);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -10,10 +10,37 @@
  * Included files
  **********************************************************************************************************************/
 #include "fsl_common.h"
+#include "fsl_adc16.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
+
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+/* Definitions for BOARD_InitPeripherals functional group */
+/* Alias for ADC0 peripheral */
+#define ADC0_PERIPHERAL ADC0
+/* Definition of custom name for ADC0 configuration #0 (channel 3, control group 0) */
+#define ADC0_SENS_LUZ 0U
+/* Definition of custom name for ADC0 configuration #1 (channel 7a, control group 0) */
+#define ADC0_LM_35 1U
+/* ADC0 interrupt vector ID (number). */
+#define ADC0_IRQN ADC0_IRQn
+/* ADC0 interrupt handler identifier. */
+#define ADC0_IRQHANDLER ADC0_IRQHandler
+/* Channel 0 (SE.3) conversion control group. */
+#define ADC0_CH0_CONTROL_GROUP 0
+/* Channel 1 (SE.7a) conversion control group. */
+#define ADC0_CH1_CONTROL_GROUP 0
+
+/***********************************************************************************************************************
+ * Global variables
+ **********************************************************************************************************************/
+extern adc16_channel_config_t ADC0_channelsConfig[2];
+extern const adc16_config_t ADC0_config;
+extern const adc16_channel_mux_mode_t ADC0_muxMode;
 
 /***********************************************************************************************************************
  * Initialization functions
