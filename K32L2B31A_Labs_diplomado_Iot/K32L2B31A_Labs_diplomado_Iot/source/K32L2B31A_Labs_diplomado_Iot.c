@@ -73,8 +73,10 @@ int main(void) {
 
     uint32_t dato_sensor;
     float k1 = 3.3/4095;
-    float k2 = 3.29/-0.01;
+    float k2;
     float k3 = 1/0.2;
+
+    float r2;
 
     float voltaje;
     float corriente;
@@ -89,9 +91,7 @@ int main(void) {
     while(1) {
 
         GPIO_PortToggle(BOARD_LED_R_GPIO, 1u << BOARD_LED_R_GPIO_PIN);
-        //SysTick_DelayTicks(1000U);
         /* Delay 1000 ms */
-
 
         // Configurar canal adc
         ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP,  &ADC0_channelsConfig[0]);
@@ -104,12 +104,15 @@ int main(void) {
 
         /* Captura dato ADC e imprime por consola */
         dato_sensor = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
-        //PRINTF("ADC Value: %d\r\n", dato_sensor);
+        PRINTF("ADC Value: %d\r\n", dato_sensor);
 
         voltaje = dato_sensor*k1;
         PRINTF("Voltaje[V]: %2.2f\r\n", voltaje);
 
-        corriente = (voltaje/-0.01)-k2+1;
+        r2 = (1/((3.3/voltaje)-1));
+        k2 = 100/r2;
+
+        corriente = voltaje*k2;
         PRINTF("Corriente[uA]: %2.2f\r\n", corriente);
 
         lux = corriente*k3;
