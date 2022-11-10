@@ -8,6 +8,15 @@
 #include "fsl_debug_console.h"
 #include "fsl_adc16.h"
 
+#include "fsl_device_registers.h"
+#include "fsl_common.h"
+
+#define BOARD_LED_G_GPIO     BOARD_LED_GREEN_GPIO
+#define BOARD_LED_G_GPIO_PIN BOARD_LED_GREEN_GPIO_PIN
+
+#define BOARD_LED_R_GPIO     BOARD_LED_RED_GPIO
+#define BOARD_LED_R_GPIO_PIN BOARD_LED_RED_GPIO_PIN
+
 
 volatile uint32_t g_systickCounter;
 
@@ -49,6 +58,7 @@ int main(void) {
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
 
+
     if (SysTick_Config(SystemCoreClock / 1000U))
     {
         while (1)
@@ -78,6 +88,10 @@ int main(void) {
     /* Enter an infinite loop, just incrementing a counter. */
     while(1) {
 
+        GPIO_PortToggle(BOARD_LED_R_GPIO, 1u << BOARD_LED_R_GPIO_PIN);
+        //SysTick_DelayTicks(1000U);
+        /* Delay 1000 ms */
+
 
         // Configurar canal adc
         ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP,  &ADC0_channelsConfig[0]);
@@ -90,7 +104,7 @@ int main(void) {
 
         /* Captura dato ADC e imprime por consola */
         dato_sensor = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
-        PRINTF("ADC Value: %d\r\n", dato_sensor);
+        //PRINTF("ADC Value: %d\r\n", dato_sensor);
 
         voltaje = dato_sensor*k1;
         PRINTF("Voltaje[V]: %2.2f\r\n", voltaje);
@@ -101,13 +115,13 @@ int main(void) {
         lux = corriente*k3;
         PRINTF("LUX: %2.2f\r\n", lux);
 
-
         SysTick_DelayTicks(1000U);
-        //i++ ;
-        //test(&i);
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
+        GPIO_PortToggle(BOARD_LED_G_GPIO, 1u << BOARD_LED_G_GPIO_PIN);
+
+
         __asm volatile ("nop");
+
     }
     return 0 ;
+
 }

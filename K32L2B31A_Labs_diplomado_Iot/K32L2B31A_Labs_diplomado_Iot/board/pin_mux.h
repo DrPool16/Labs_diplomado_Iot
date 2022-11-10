@@ -182,6 +182,14 @@ void BOARD_InitBUTTONSPins(void);
 /*! @name PORTE31 (number 19), LED2
   @{ */
 
+
+
+/*!
+ * @brief Configures pin routing and optionally pin electrical features.
+ *
+ */
+void BOARD_InitLEDsPins(void);
+
 /* Symbols to be used with GPIO driver */
 #define BOARD_LED2_FGPIO FGPIOE              /*!<@brief FGPIO peripheral base pointer */
 #define BOARD_LED2_GPIO GPIOE                /*!<@brief GPIO peripheral base pointer */
@@ -193,7 +201,7 @@ void BOARD_InitBUTTONSPins(void);
 #define BOARD_LED2_PIN_MASK (1U << 31U)      /*!<@brief PORT pin mask */
                                              /* @} */
 
-/*! @name PORTD5 (number 62), J2[12]/D13/SPI1_SCK/LED1/LCD_P45
+/*! @name PORTD5 (number 62), LED1
   @{ */
 
 /* Symbols to be used with GPIO driver */
@@ -207,11 +215,13 @@ void BOARD_InitBUTTONSPins(void);
 #define BOARD_LED1_PIN_MASK (1U << 5U)      /*!<@brief PORT pin mask */
                                             /* @} */
 
+
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *
  */
-void BOARD_InitLEDsPins(void);
+void BOARD_InitDEBUG_UARTPins(void);
 
 #define SOPT5_LPUART0RXSRC_LPUART_RX 0x00u /*!<@brief LPUART0 Receive Data Source Select: LPUART_RX pin */
 #define SOPT5_LPUART0TXSRC_LPUART_TX 0x00u /*!<@brief LPUART0 Transmit Data Source Select: LPUART0_TX pin */
@@ -233,12 +243,6 @@ void BOARD_InitLEDsPins(void);
 #define BOARD_DEBUG_UART0_TX_PIN 2U                   /*!<@brief PORT pin number */
 #define BOARD_DEBUG_UART0_TX_PIN_MASK (1U << 2U)      /*!<@brief PORT pin mask */
                                                       /* @} */
-
-/*!
- * @brief Configures pin routing and optionally pin electrical features.
- *
- */
-void BOARD_InitDEBUG_UARTPins(void);
 
 /*! @name USB0_DP (number 5), J10[3]/USB_DP
   @{ */
